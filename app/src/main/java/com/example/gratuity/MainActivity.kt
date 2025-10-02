@@ -14,10 +14,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.gratuity.ui.theme.GratuityTheme
+
+val customFont = FontFamily(
+    Font(R.font.bebas_neue_regular)
+)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,10 +51,11 @@ fun GradientBackground(innerPadding: PaddingValues) {
 
     val base = baseValue.toFloatOrNull() ?: 0f
     val tax = taxValue.toFloatOrNull() ?: 0f
-    val tip = tipPercent / 100f
+    val tip = (tipPercent.toInt() / 100f)
+    val splitCountInt = splitCount.toInt().coerceAtLeast(1)
 
-    val totalAmount = base * (1 + tax / 100) * (1 + tip)
-    val perPersonAmount = if (splitCount > 0f) totalAmount / splitCount else totalAmount
+    val totalAmount = base + (base * tax / 100f) + (base * tip)
+    val perPersonAmount = totalAmount / splitCountInt
 
     val fieldColors = TextFieldDefaults.colors(
         focusedTextColor = Color.White,
@@ -100,7 +108,9 @@ fun GradientBackground(innerPadding: PaddingValues) {
                 Text(
                     text = "GRATUITY",
                     color = Color.White,
+                    fontFamily = customFont,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp,
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
@@ -116,7 +126,11 @@ fun GradientBackground(innerPadding: PaddingValues) {
                 TextField(
                     value = baseValue,
                     onValueChange = { baseValue = it },
-                    label = { Text("Base") },
+                    label = { Text(
+                        "Base",
+                                fontFamily = customFont,
+                                fontSize = 16.sp
+                            )   },
                     colors = fieldColors,
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
@@ -127,7 +141,11 @@ fun GradientBackground(innerPadding: PaddingValues) {
                 TextField(
                     value = taxValue,
                     onValueChange = { taxValue = it },
-                    label = { Text("Tax") },
+                    label = { Text(
+                        "Tax",
+                                fontFamily = customFont,
+                                fontSize = 16.sp
+                            ) },
                     colors = fieldColors,
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
@@ -157,7 +175,9 @@ fun GradientBackground(innerPadding: PaddingValues) {
                         text = "Tip: ${tipPercent.toInt()}%",
                         color = Color.White,
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = customFont,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
 
@@ -187,14 +207,16 @@ fun GradientBackground(innerPadding: PaddingValues) {
                         text = "Split: ${splitCount.toInt()}",
                         color = Color.White,
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = customFont,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
                     )
                 }
 
                 Slider(
                     value = splitCount,
                     onValueChange = { splitCount = it },
-                    valueRange = 0f..10f,
+                    valueRange = 1f..10f,
                     steps = 10,
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White,
@@ -226,7 +248,9 @@ fun GradientBackground(innerPadding: PaddingValues) {
                     Text(
                         text = "Per Person: $" + "%.2f".format(perPersonAmount),
                         color = Color.White,
+                        fontFamily = customFont,
                         fontWeight = FontWeight.Bold,
+                        fontSize = 32.sp,
                         modifier = Modifier.padding(start = 16.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -245,7 +269,9 @@ fun GradientBackground(innerPadding: PaddingValues) {
                     Text(
                         text = "Total: $" + "%.2f".format(totalAmount),
                         color = Color.White,
+                        fontFamily = customFont,
                         fontWeight = FontWeight.Bold,
+                        fontSize = 32.sp,
                         modifier = Modifier.padding(start = 16.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )
