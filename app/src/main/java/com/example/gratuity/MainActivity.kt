@@ -40,7 +40,14 @@ fun GradientBackground(innerPadding: PaddingValues) {
     var baseValue by remember { mutableStateOf("") }
     var taxValue by remember { mutableStateOf("") }
     var tipPercent by remember { mutableStateOf(15f) }
-    var splitValue by remember { mutableStateOf(1f) }
+    var splitCount by remember { mutableStateOf(1f) }
+
+    val base = baseValue.toFloatOrNull() ?: 0f
+    val tax = taxValue.toFloatOrNull() ?: 0f
+    val tip = tipPercent / 100f
+
+    val totalAmount = base * (1 + tax / 100) * (1 + tip)
+    val perPersonAmount = if (splitCount > 0f) totalAmount / splitCount else totalAmount
 
     val fieldColors = TextFieldDefaults.colors(
         focusedTextColor = Color.White,
@@ -177,7 +184,7 @@ fun GradientBackground(innerPadding: PaddingValues) {
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "Split: ${splitValue.toInt()}",
+                        text = "Split: ${splitCount.toInt()}",
                         color = Color.White,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold
@@ -185,8 +192,8 @@ fun GradientBackground(innerPadding: PaddingValues) {
                 }
 
                 Slider(
-                    value = splitValue,
-                    onValueChange = { splitValue = it },
+                    value = splitCount,
+                    onValueChange = { splitCount = it },
                     valueRange = 0f..10f,
                     steps = 10,
                     colors = SliderDefaults.colors(
@@ -196,6 +203,53 @@ fun GradientBackground(innerPadding: PaddingValues) {
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .background(
+                            color = Color(0xFF008C10),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = "Per Person: $" + "%.2f".format(perPersonAmount),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .background(
+                            color = Color(0xFF008C10),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = "Total: $" + "%.2f".format(totalAmount),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
